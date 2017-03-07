@@ -1,0 +1,37 @@
+<workflow-app xmlns="uri:oozie:workflow:0.3" name="wf_user_active">
+    <start to="hive_user_active"/>
+    <action name="hive_user_active">
+	<shell xmlns="uri:oozie:shell-action:0.1">
+	<job-tracker>${jobTracker}</job-tracker>
+	<name-node>${nameNode}</name-node>
+    	<exec>start.sh</exec>
+	<argument>20160227</argument>
+    	<file>${workflowAppUri}/../db.conf</file>
+	<file>${workflowAppUri}/start.sh</file>
+	<file>${workflowAppUri}/sqoop.sh</file>
+	</shell>  
+    <ok to="end"/>
+    <error to="kill"/>
+    </action>
+	
+    <action name="error_email" >
+    <email xmlns="uri:oozie:email-action:0.2">
+        <to>${SendTo}</to>
+        <!--
+        <cc>[COMMA-SEPARATED-CC-ADDRESSES]</cc> 
+        -->
+        <subject>Job Error for wf-user-active  ${wf:id()}</subject>
+        <body>The workflow ${wf:id()} of ${wf:name()} has some error.
+        Action failed, error node [${wf:lastErrorNode()}] , error code [${wf:errorCode(wf:lastErrorNode())}] , error message [${wf:errorMessage(wf:lastErrorNode())}]
+        </body>
+    </email>
+    <ok to="kill"/>
+    <error to="kill"/>
+	</action>
+
+ <kill name="kill">
+         <message>Action failed, error node [${wf:lastErrorNode()}] , error code [${wf:errorCode(wf:lastErrorNode())}] , error message [${wf:errorMessage(wf:lastErrorNode())}]</message>
+ </kill>
+ 
+    <end name="end"/>
+</workflow-app>

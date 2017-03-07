@@ -1,0 +1,1 @@
+DELETE FROM rpt_wt_user_activeoutline WHERE dt =:date;INSERT INTO rpt_wt_user_activeoutline SELECT * FROM tmp_wt_user_activeoutline WHERE dt=:date;truncate tmp_wt_user_activeoutline;
